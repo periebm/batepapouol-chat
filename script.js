@@ -25,7 +25,6 @@ function checkLogin(){
         const post_login = axios.post("https://mock-api.driven.com.br/api/v6/uol/status", user);
         post_login.then();
         post_login.catch();
-        console.log("Checou");
     }
 }
 
@@ -37,6 +36,7 @@ function erroLogin(erro){
 }
 
 function loginSuccess(response){
+    reloadMsg();
     erroFlag = false;
     statusCode = response.status;
 
@@ -44,7 +44,6 @@ function loginSuccess(response){
 }
 
 function reloadMsg(){
-    console.log('reload');
     let messages = axios.get("https://mock-api.driven.com.br/api/v6/uol/messages");
     messages.then(getResponse);
 }
@@ -53,11 +52,9 @@ function reloadMsg(){
 function getResponse(response)
 {
     chat_log = response.data;
-    console.log(chat_log);
     let chat = document.querySelector(".chat ul");
+  
     chat.innerHTML = "";
-
-
     for(let i = 0; i<chat_log.length; i++){
         if(chat_log[i].type == "message"){
             chat.innerHTML +=
@@ -76,14 +73,41 @@ function getResponse(response)
         }
 
         else if(chat_log[i].type == "private_message"){
-            chat.innerHTML +=
-            `<li data-test="message" class="reserv-msg">
-                <p><span class="horario">(${chat_log[i].time})</span> 
-                <b>${chat_log[i].from}</b> reservadamente para <b>${chat_log[i].to}</b>: ${chat_log[i].text} </p>
-            </li>`
+            if((chat_log[i].from == user.name) || (chat_log[i].to == user.name))
+            {
+                chat.innerHTML +=
+                `<li data-test="message" class="reserv-msg">
+                    <p><span class="horario">(${chat_log[i].time})</span> 
+                    <b>${chat_log[i].from}</b> reservadamente para <b>${chat_log[i].to}</b>: ${chat_log[i].text} </p>
+                </li>`
+            }
         }
-
     }
+    chat.querySelector('li:last-child').scrollIntoView();
+    
+}
+
+function sendMsg(){
+    const insideMsg = document.querySelector(".rodape input").value;
+
+    let msg = {
+        from:user.name,
+        to:"Todos",
+        text:insideMsg,
+        type:"message" 
+    };
+    console.log(msg);
+    let sendInfo = axios.post("https://mock-api.driven.com.br/api/v6/uol/messages", msg);
+    sendInfo.then();
+    sendInfo.catch(msgErro);
+}
+
+function msg_sent(){
+    reloadMsg();
+}
+
+function msgErro(erro){
+    window.location.reload();
 }
 
 

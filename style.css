@@ -51,10 +51,6 @@ body{
     margin-top: 26px;
 }
 
-.chat ul{
-
-}
-
 .chat li{
     display: flex;
     align-items: center;
