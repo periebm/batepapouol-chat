@@ -1,10 +1,13 @@
-
 let user = {
     name: ""
     };
 let erroFlag = false;
 let statusCode;
 let chat_log = [];
+let insideMsg = document.querySelector(".rodape input");
+
+
+
 
 function login(){
     if(erroFlag === true){
@@ -88,18 +91,19 @@ function getResponse(response)
 }
 
 function sendMsg(){
-    const insideMsg = document.querySelector(".rodape input").value;
 
     let msg = {
         from:user.name,
         to:"Todos",
-        text:insideMsg,
+        text:insideMsg.value,
         type:"message" 
     };
     console.log(msg);
     let sendInfo = axios.post("https://mock-api.driven.com.br/api/v6/uol/messages", msg);
-    sendInfo.then();
+    sendInfo.then(msg_sent);
     sendInfo.catch(msgErro);
+
+    insideMsg.value = '';
 }
 
 function msg_sent(){
@@ -109,6 +113,12 @@ function msg_sent(){
 function msgErro(erro){
     window.location.reload();
 }
+
+insideMsg.addEventListener("keyup", ({key}) => {
+    if (key === "Enter") {
+        sendMsg();
+    }
+})
 
 
 login();
